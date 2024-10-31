@@ -57,8 +57,18 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() 
   {
-    double x_val = Math.min(stick.getRawAxis(1), 0.99);
-    double y_val = Math.min(stick.getRawAxis(0), 0.99);
+    double x_val = stick.getRawAxis(1);
+    double y_val = stick.getRawAxis(0);
+
+    if(x_val>=1)
+      x_val = 0.99;
+    else if(x_val<=-1)
+      x_val = -0.99;
+
+    if(y_val>=1)
+      y_val = 0.99;
+    else if(y_val<=-1)
+      y_val = -0.99;
 
     double turnOffset = x_val*y_val;
 
