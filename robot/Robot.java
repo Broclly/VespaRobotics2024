@@ -7,9 +7,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.Joystick;
 
 /**
@@ -24,19 +21,23 @@ public class Robot extends TimedRobot {
    * initialization code.
    */
 
-  private VictorSPX right1, right2, left1, left2;
-  private Joystick stick;
-  private UsbCamera camera;
+  private VictorSPX driveLeft1 = new VictorSPX(1);
+  private VictorSPX driveLeft2 = new VictorSPX(2);
+  private VictorSPX driveRight1 = new VictorSPX(3);
+  private VictorSPX driveRight2 = new VictorSPX(4);
+
+  public void driveControl(double leftSpeed, double rightSpeed){
+    driveLeft1.set(ControlMode.PercentOutput, leftSpeed);
+    driveLeft2.set(ControlMode.PercentOutput, leftSpeed);
+    driveRight1.set(ControlMode.PercentOutput, rightSpeed);
+    driveRight2.set(ControlMode.PercentOutput, rightSpeed);
+
+  }
+
+  public Joystick newJoysStick = new Joystick(0);
 
   @Override
-  public void robotInit() 
-  {
-    right1 = new VictorSPX(3);
-    right2 = new VictorSPX(4);
-    left1 = new VictorSPX(1);
-    left2 = new VictorSPX(2);
-
-    stick = new Joystick(0);
+  public void robotInit() {
   }
 
   @Override
@@ -49,30 +50,28 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() 
-  {
-    camera = CameraServer.startAutomaticCapture();
-  }
+  public void teleopInit() {}
 
   @Override
-  public void teleopPeriodic() 
-  {
-    double x_val = stick.getRawAxis(1);
-    double y_val = stick.getRawAxis(0);
+  public void teleopPeriodic() {
+    double x_ampl = newJoysStick.getRawAxis(1);
+    double y_ampl = newJoysStick.getRawAxis(0);
 
-    double speed_right = (x_val+y_val);
-    double speed_left = (x_val+y_val);
+    if (y_ampl > 0){
+      driveControl(0.5,-0.5);
+    }
+    else if (y_ampl < 0){
+      driveControl(-0.5, 0.5);
+    }
 
-    if(speed_left>1||speed_left<-1)
-      speed_left = (int)speed_left;
-
-    if(speed_right>1||speed_right<-1)
-      speed_right = (int)speed_right;
-
-    right1.set(ControlMode.PercentOutput, -speed_right);
-    right2.set(ControlMode.PercentOutput, -speed_right);
-    left1.set(ControlMode.PercentOutput, speed_left);
-    left2.set(ControlMode.PercentOutput, speed_left);
+    if (x_ampl > 1){
+      driveControl(-0.5, -0.5);
+    }
+    else if (x_ampl < 0){
+      driveControl(0.5, 0.5);
+    }
+    //y-axis is fwd & back, 1 is fwd, -1 is bwd
+    //x-axis is sides
   }
 
   @Override
