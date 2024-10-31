@@ -57,22 +57,27 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() 
   {
-    double x_val = stick.getRawAxis(1);
-    double y_val = stick.getRawAxis(0);
+    double x_val = Math.min(stick.getRawAxis(1), 0.99);
+    double y_val = Math.min(stick.getRawAxis(0), 0.99);
 
-    double speed_right = (x_val+y_val);
-    double speed_left = (x_val+y_val);
+    double turnOffset = x_val*y_val;
 
-    if(speed_left>1||speed_left<-1)
-      speed_left = (int)speed_left;
+    double rightSpeed = y_val;
+    double leftSpeed = y_val;
 
-    if(speed_right>1||speed_right<-1)
-      speed_right = (int)speed_right;
+    if(turnOffset<0)
+    {
+      rightSpeed = Math.abs(y_val)-Math.abs(turnOffset);
+    }
+    else if(turnOffset>0)
+    {
+      leftSpeed = Math.abs(y_val)-Math.abs(turnOffset);
+    }
 
-    right1.set(ControlMode.PercentOutput, -speed_right);
-    right2.set(ControlMode.PercentOutput, -speed_right);
-    left1.set(ControlMode.PercentOutput, speed_left);
-    left2.set(ControlMode.PercentOutput, speed_left);
+    left1.set(ControlMode.PercentOutput, -leftSpeed);
+    left2.set(ControlMode.PercentOutput, -leftSpeed);
+    right1.set(ControlMode.PercentOutput, rightSpeed);
+    right2.set(ControlMode.PercentOutput, rightSpeed);
   }
 
   @Override
