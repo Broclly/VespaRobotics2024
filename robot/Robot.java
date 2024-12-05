@@ -60,19 +60,34 @@ public class Robot extends TimedRobot {
     double x_val = stick.getRawAxis(1);
     double y_val = stick.getRawAxis(0);
 
-    double speed_right = (x_val+y_val);
-    double speed_left = (x_val+y_val);
+    if(x_val>=1)
+      x_val = 0.99;
+    else if(x_val<=-1)
+      x_val = -0.99;
 
-    if(speed_left>1||speed_left<-1)
-      speed_left = (int)speed_left;
+    if(y_val>=1)
+      y_val = 0.99;
+    else if(y_val<=-1)
+      y_val = -0.99;
 
-    if(speed_right>1||speed_right<-1)
-      speed_right = (int)speed_right;
+    double turnOffset = x_val*y_val;
 
-    right1.set(ControlMode.PercentOutput, -speed_right);
-    right2.set(ControlMode.PercentOutput, -speed_right);
-    left1.set(ControlMode.PercentOutput, speed_left);
-    left2.set(ControlMode.PercentOutput, speed_left);
+    double rightSpeed = y_val;
+    double leftSpeed = y_val;
+
+    if(turnOffset<0)
+    {
+      rightSpeed = Math.abs(y_val)-Math.abs(turnOffset);
+    }
+    else if(turnOffset>0)
+    {
+      leftSpeed = Math.abs(y_val)-Math.abs(turnOffset);
+    }
+
+    left1.set(ControlMode.PercentOutput, -leftSpeed);
+    left2.set(ControlMode.PercentOutput, -leftSpeed);
+    right1.set(ControlMode.PercentOutput, rightSpeed);
+    right2.set(ControlMode.PercentOutput, rightSpeed);
   }
 
   @Override
